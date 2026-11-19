@@ -1,0 +1,59 @@
+{
+  "name": "@bloom-group/clock",
+  "version": "1.0.0",
+  "description": "A testable clock built on the Temporal API: inject time instead of reading it, and control it in tests.",
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./file": {
+      "types": "./lib/file.d.ts",
+      "default": "./lib/file.js"
+    }
+  },
+  "files": [
+    "lib"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "prepare": "husky",
+    "prepublishOnly": "npm run typecheck && npm test && npm run build"
+  },
+  "keywords": [
+    "clock",
+    "time",
+    "temporal",
+    "testing",
+    "dependency-injection"
+  ],
+  "author": "Bloom Group",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BloomTechNL/clock.git"
+  },
+  "homepage": "https://github.com/BloomTechNL/clock#readme",
+  "bugs": {
+    "url": "https://github.com/BloomTechNL/clock/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "temporal-polyfill": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24",
+    "husky": "^9.1.7",
+    "temporal-polyfill": "^1.0.6",
+    "typescript": "^6.0.3",
+    "vitest": "^5.0.5"
+  }
+}
