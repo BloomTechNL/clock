@@ -4,7 +4,11 @@ import { dirname } from 'node:path';
 import type { ClockStorage } from './clock-storage.js';
 
 export class FileClockStorage implements ClockStorage {
-  constructor(private readonly filePath: string) {}
+  private readonly filePath: string;
+
+  constructor(filePath: string) {
+    this.filePath = filePath;
+  }
 
   async load(): Promise<string | undefined> {
     try {

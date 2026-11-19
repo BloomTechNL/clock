@@ -16,8 +16,12 @@
     }
   },
   "files": [
-    "lib"
+    "lib",
+    "src"
   ],
+  "engines": {
+    "node": ">=22"
+  },
   "sideEffects": false,
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
