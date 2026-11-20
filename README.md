@@ -70,10 +70,10 @@ Pass a second argument to start somewhere else: `new StoredClock(storage, initia
 
 ### Storages
 
-| Storage                | Import                       | Keeps the time         |
-| ---------------------- | ---------------------------- | ---------------------- |
-| `InMemoryClockStorage` | `@bloom-group/clock`         | in memory (one process) |
-| `FileClockStorage`     | `@bloom-group/clock/file`    | in a file (Node.js)    |
+| Storage                | Import                    | Keeps the time          |
+| ---------------------- | ------------------------- | ----------------------- |
+| `InMemoryClockStorage` | `@bloom-group/clock`      | in memory (one process) |
+| `FileClockStorage`     | `@bloom-group/clock/file` | in a file (Node.js)     |
 
 `FileClockStorage` lives in its own entry point because it uses `node:fs`; the main entry point has no Node.js dependencies.
 
@@ -85,7 +85,10 @@ Anything that can load and save a string works, such as a database row, Redis or
 import type { ClockStorage } from '@bloom-group/clock';
 
 class RedisClockStorage implements ClockStorage {
-  constructor(private readonly redis: Redis, private readonly key: string) {}
+  constructor(
+    private readonly redis: Redis,
+    private readonly key: string,
+  ) {}
 
   async load() {
     return (await this.redis.get(this.key)) ?? undefined;
@@ -101,17 +104,17 @@ The stored value is an ISO 8601 instant such as `2026-01-01T12:00:00Z`. A value 
 
 ## API
 
-| Export                      | Description                                                              |
-| --------------------------- | ------------------------------------------------------------------------ |
-| `Clock`                     | `now(): Promise<Temporal.Instant>`                                       |
-| `ChangeableClock`           | A `Clock` with `changeTime(newTime: Temporal.Instant): Promise<void>`    |
-| `SystemClock`               | The real time                                                            |
-| `fixedClock(time)`          | An in-memory `ChangeableClock` starting at `time`                        |
-| `StoredClock`               | A `ChangeableClock` backed by a `ClockStorage`                           |
-| `ClockStorage`              | `load(): Promise<string \| undefined>` and `save(value): Promise<void>`  |
-| `InMemoryClockStorage`      | Keeps the value in memory                                                |
-| `FileClockStorage`          | Keeps the value in a file (`@bloom-group/clock/file`)                    |
-| `DEFAULT_STORED_TIME`       | Where a `StoredClock` starts when nothing is stored                      |
+| Export                 | Description                                                             |
+| ---------------------- | ----------------------------------------------------------------------- |
+| `Clock`                | `now(): Promise<Temporal.Instant>`                                      |
+| `ChangeableClock`      | A `Clock` with `changeTime(newTime: Temporal.Instant): Promise<void>`   |
+| `SystemClock`          | The real time                                                           |
+| `fixedClock(time)`     | An in-memory `ChangeableClock` starting at `time`                       |
+| `StoredClock`          | A `ChangeableClock` backed by a `ClockStorage`                          |
+| `ClockStorage`         | `load(): Promise<string \| undefined>` and `save(value): Promise<void>` |
+| `InMemoryClockStorage` | Keeps the value in memory                                               |
+| `FileClockStorage`     | Keeps the value in a file (`@bloom-group/clock/file`)                   |
+| `DEFAULT_STORED_TIME`  | Where a `StoredClock` starts when nothing is stored                     |
 
 ## License
 

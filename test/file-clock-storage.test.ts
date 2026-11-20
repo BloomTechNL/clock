@@ -47,7 +47,9 @@ describe('FileClockStorage', () => {
     const filePath = join(directory, 'clock.txt');
     await new FileClockStorage(filePath).save('2026-01-01T12:00:00Z\n');
 
-    expect(await new FileClockStorage(filePath).load()).toBe('2026-01-01T12:00:00Z');
+    expect(await new FileClockStorage(filePath).load()).toBe(
+      '2026-01-01T12:00:00Z',
+    );
   });
 
   it('passes on errors other than a missing file', async () => {
