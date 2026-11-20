@@ -1,6 +1,12 @@
 import process from 'node:process';
 import { execFileSync, spawnSync } from 'node:child_process';
-import { readFileSync, writeFileSync, mkdtempSync, rmSync } from 'node:fs';
+import {
+  readFileSync,
+  readdirSync,
+  writeFileSync,
+  mkdtempSync,
+  rmSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { CommitParser } from 'conventional-commits-parser';
@@ -102,15 +108,8 @@ function pack(version) {
       JSON.stringify({ ...manifest, version, releaseCommit: head }, null, 2) +
         '\n',
     );
-    const [{ filename }] = JSON.parse(
-      execFileSync(
-        'npm',
-        ['pack', '--ignore-scripts', '--json', '--pack-destination', directory],
-        {
-          encoding: 'utf8',
-        },
-      ),
-    );
+    command('npm', 'pack', '--ignore-scripts', '--pack-destination', directory);
+    const [filename] = readdirSync(directory);
     const tarball = join(directory, filename);
     smokeTest(tarball, version);
     return tarball;
