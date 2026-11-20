@@ -31,22 +31,20 @@ jobs:
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test
-      - run: node scripts/release.mjs check
+      - run: pnpm build
 
   publish:
     needs: check
     if: github.repository == 'BloomTechNL/clock'
     runs-on: ubuntu-latest
     permissions:
-      contents: write
-      id-token: write
+      contents: write # push the v<version> tag
+      id-token: write # npm trusted publishing (OIDC) and provenance
     concurrency:
       group: npm-release-main
       queue: max
     steps:
       - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
       - uses: pnpm/action-setup@v6
         with:
           standalone: true
@@ -55,5 +53,29 @@ jobs:
           node-version: 24
           registry-url: https://registry.npmjs.org
           package-manager-cache: false
-      - run: pnpm install --frozen-lockfile
-      - run: node scripts/release.mjs publish
+
+      - name: Check whether this version is already on npm
+        id: version
+        run: |
+          NAME=$(node -p "require('./package.json').name")
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if npm view "$NAME@$VERSION" version >/dev/null 2>&1; then
+            echo "$NAME@$VERSION is already published; skipping."
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "$NAME@$VERSION is not on npm yet; publishing."
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - if: steps.version.outputs.publish == 'true'
+        run: pnpm install --frozen-lockfile
+
+      # prepublishOnly runs typecheck, test and build before packing
+      - if: steps.version.outputs.publish == 'true'
+        run: npm publish --provenance --access public
+
+      - if: steps.version.outputs.publish == 'true'
+        run: |
+          git tag "v${{ steps.version.outputs.version }}"
+          git push origin "refs/tags/v${{ steps.version.outputs.version }}"
