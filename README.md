@@ -116,6 +116,10 @@ The stored value is an ISO 8601 instant such as `2026-01-01T12:00:00Z`. A value 
 | `FileClockStorage`     | Keeps the value in a file (`@bloom-group/clock/file`)                   |
 | `DEFAULT_STORED_TIME`  | Where a `StoredClock` starts when nothing is stored                     |
 
+## Contributing and releases
+
+Use `npm run deps:install` to install (it audits the frozen lockfile first and installs without lifecycle scripts), and run `pnpm format`, `pnpm lint`, `pnpm typecheck`, `pnpm test` and `pnpm build` before pushing to `main`. Releases are published from GitHub Actions with provenance: bump `version` in `package.json`, push to `main`, then run **CI and npm release** with that version and approve the `npm-release` environment. See [AGENTS.md](AGENTS.md) for the full process and settings.
+
 ## License
 
 MIT
