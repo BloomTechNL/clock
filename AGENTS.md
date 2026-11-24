@@ -20,8 +20,7 @@ Releases are manual and go through GitHub Actions only. Never run `npm publish` 
 1. Bump `version` in `package.json` using semver (patch for fixes, minor for features, major for breaking changes) and commit it as `chore: release <version>`.
 2. Push to `main` and wait for **CI and npm release** to pass. A push never publishes.
 3. In GitHub, open Actions, **CI and npm release**, **Run workflow** on `main`, and enter the exact version. Or run `gh workflow run release.yml --ref main -f version=<version>`.
-4. A reviewer approves the `npm-release` environment under **Review deployments**.
-5. The workflow publishes the tarball built in that run with provenance, then pushes `v<version>`. Verify with `npm view @bloom-group/clock dist-tags` and the tag on GitHub. npm can take a minute to show the new version.
+4. The workflow publishes the tarball built in that run with provenance, then pushes `v<version>`. Verify with `npm view @bloom-group/clock dist-tags` and the tag on GitHub. npm can take a minute to show the new version.
 
 The run fails before publishing if the input differs from `package.json`, or if the run is not on `main`. npm rejects a version that already exists. If the publish succeeded and the tag job failed, rerun the failed job or push `v<version>` for the published commit by hand.
 
@@ -29,6 +28,6 @@ The run fails before publishing if the input differs from `package.json`, or if 
 
 The package is already published and these settings are in place. Keep them:
 
-1. In GitHub, configure the `npm-release` environment for deployments from the `main` branch only. Require maintainer reviewers and disable self-review and administrator bypass.
+1. In GitHub, the `npm-release` environment has no required reviewers, so dispatching the workflow publishes without approval. Only maintainers with write access can dispatch it. The workflow itself refuses to publish from any branch other than `main`.
 2. In npm, the trusted publisher uses owner `BloomTechNL`, repository `clock`, workflow `release.yml`, environment `npm-release`, and **Allow `npm publish`** enabled. The environment binding is required so a workflow change cannot obtain npm publishing access by omitting the environment. [npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/)
 3. In GitHub repository settings, require actions to be pinned to a full-length commit SHA, and add a ruleset that blocks force-pushes and deletion on `main` and protects `v*` tags. Pin new or updated actions as `owner/repo@<sha> # <tag>`.
