@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { mkdir, mkdtemp, readdir, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { Temporal } from 'temporal-polyfill';
@@ -32,6 +32,23 @@ describe('FileClockStorage', () => {
     await new FileClockStorage(filePath).save('2026-01-01T12:00:00Z');
 
     expect(await readFile(filePath, 'utf8')).toBe('2026-01-01T12:00:00Z');
+  });
+
+  it('leaves no temporary files behind after saving', async () => {
+    await new FileClockStorage(join(directory, 'clock.txt')).save(
+      '2026-01-01T12:00:00Z',
+    );
+
+    expect(await readdir(directory)).toEqual(['clock.txt']);
+  });
+
+  it('cleans up the temporary file when saving fails', async () => {
+    const target = join(directory, 'target');
+    await mkdir(target);
+    const storage = new FileClockStorage(target);
+
+    await expect(storage.save('2026-01-01T12:00:00Z')).rejects.toThrow();
+    expect(await readdir(directory)).toEqual(['target']);
   });
 
   it('shares the time between clocks using the same file', async () => {

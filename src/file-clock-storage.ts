@@ -1,4 +1,5 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { randomUUID } from 'node:crypto';
+import { mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
 
 import type { ClockStorage } from './clock-storage.js';
@@ -21,7 +22,15 @@ export class FileClockStorage implements ClockStorage {
 
   async save(value: string): Promise<void> {
     await mkdir(dirname(this.filePath), { recursive: true });
-    await writeFile(this.filePath, value, 'utf8');
+    // Write to a temporary file and rename it so readers never see a partial write.
+    const temporaryPath = `${this.filePath}.${randomUUID()}.tmp`;
+    try {
+      await writeFile(temporaryPath, value, 'utf8');
+      await rename(temporaryPath, this.filePath);
+    } catch (error) {
+      await rm(temporaryPath, { force: true });
+      throw error;
+    }
   }
 }
 
