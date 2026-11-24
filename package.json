@@ -1,6 +1,6 @@
 {
   "name": "@bloom-group/clock",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A testable clock built on the Temporal API: inject time instead of reading it, and control it in tests.",
   "type": "module",
   "main": "lib/index.js",
