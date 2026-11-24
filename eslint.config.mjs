@@ -4,5 +4,15 @@ import tseslint from 'typescript-eslint';
 
 export default defineConfig({
   files: ['{src,test}/**/*.ts'],
-  extends: [js.configs.recommended, tseslint.configs.recommended],
+  extends: [js.configs.recommended, tseslint.configs.strictTypeChecked],
+  languageOptions: {
+    parserOptions: {
+      projectService: true,
+      tsconfigRootDir: import.meta.dirname,
+    },
+  },
+  rules: {
+    // Async methods without await are intentional: they implement async interfaces.
+    '@typescript-eslint/require-await': 'off',
+  },
 });
